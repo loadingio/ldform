@@ -1,0 +1,22 @@
+{
+  "author": "Kirby Wu",
+  "name": "ldForm",
+  "license": "MIT",
+  "description": "form validation tool",
+  "version": "0.0.1",
+  "homepage": "https://github.com/loadingio/ldForm",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loadingio/ldForm"
+  },
+  "engines": {
+    "node": ">=0.12.6",
+    "npm": ">=1.2.2"
+  },
+  "devDependencies": {
+    "LiveScript": ">=1.2.0",
+    "stylus": "^0.54.5",
+    "uglify-js": "=3.2.0",
+    "uglifycss": "0.0.29"
+  }
+}
