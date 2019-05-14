@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+mkdir -p dist
+echo "build src/ldform.ls -> dist/ldform.js ..."
+./node_modules/.bin/lsc -cbp src/ldform.ls > dist/ldform.js
+echo "minifying ldform.js ..."
+./node_modules/.bin/uglifyjs dist/ldform.js > dist/ldform.min.js
+echo "done."
+

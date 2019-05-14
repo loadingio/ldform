@@ -20,12 +20,12 @@ Or, you can specify your own '''getFields''' function to apply your own rules.
 
  * root: base element for this form. HTMLElement or CSS Selector. Required.
  * init(): init function.
- * valid(name, value, element): validation function.
+ * verify(name, value, element): validation function.
    * input:
      * name: field name
      * value: field value
      * element: field element
-   * return value: true (valid) / false (invalid)
+   * returns: status value ( see Status Object below )
    * optional. if omitted, ldForm will check against emptiness.
  * getFields(root): customized rules for getting fields.
    input: root - root element for ldForm
@@ -38,7 +38,12 @@ Or, you can specify your own '''getFields''' function to apply your own rules.
      * fields: field elements object.
  * afterCheck(status, fields): custom function for doing anything after check
    * input: see below
- * debounce
+ * debounce(n, s): should check call debounce?
+   * input
+     * n - event field name
+     * s - status object
+   * returns: true (debounce) / false (no debounce)
+   
 
 
 ## Status Object
