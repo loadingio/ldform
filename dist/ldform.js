@@ -49,6 +49,17 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     return true;
   },
   afterCheck: function(){},
+  values: function(){
+    var ret, k, ref$, v;
+    ret = {};
+    for (k in ref$ = this.fields) {
+      v = ref$[k];
+      ret[k] = v.getAttribute('type') === 'checkbox'
+        ? v.checked
+        : v.value;
+    }
+    return ret;
+  },
   getFields: function(root){
     var ret;
     ret = {};
@@ -57,10 +68,29 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     });
     return ret;
   },
+  checkDebounced: debounce(function(e, n, fs, s, res, rej){
+    var names, len;
+    names = this.names(s);
+    this.afterCheck(s, fs);
+    len = names.map(function(n){
+      return s[n] != null && s[n] === 0;
+    }).filter(function(it){
+      return !it;
+    }).length;
+    s.all = !len ? 0 : 1;
+    names.map(function(n){
+      var x$;
+      x$ = fs[n].classList;
+      x$.toggle('is-invalid', s[n] === 2);
+      x$.toggle('is-valid', s[n] < 1);
+      return x$;
+    });
+    return res();
+  }),
   check: function(n, e){
     var this$ = this;
     return new Promise(function(res, rej){
-      var ref$, fs, s, _;
+      var ref$, fs, s;
       if (n != null && !this$.fields[n]) {
         return rej(new Error("ldForm.check: field " + n + " not found."));
       }
@@ -68,24 +98,10 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
       if (fs[n]) {
         s[n] = this$.verify(n, fs[n].value, fs[n]);
       }
-      _ = debounce(function(e){
-        var names, len;
-        names = this$.names(s);
-        len = names.map(function(n){
-          fs[n].classList.toggle('is-invalid', s[n] === 2);
-          fs[n].classList.toggle('is-valid', s[n] < 1);
-          return s[n] != null && s[n] === 0;
-        }).filter(function(it){
-          return !it;
-        }).length;
-        s.all = !len ? 0 : 1;
-        this$.afterCheck(s);
-        return res();
-      });
       if (this$.debounce(n, s)) {
-        return _(e);
+        return this$.checkDebounced(e, n, fs, s, res, rej);
       } else {
-        return _.now(e);
+        return this$.checkDebounced.now(e, n, fs, s, res, rej);
       }
     });
   }

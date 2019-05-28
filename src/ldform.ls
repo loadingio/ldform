@@ -19,25 +19,31 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
   names: -> [k for k of @fields]
   debounce: -> true
   after-check: ->
+  values: ->
+    ret = {}
+    for k,v of @fields => ret[k] = if v.getAttribute(\type) == \checkbox => v.checked else v.value
+    return ret
+
   get-fields: (root) ->
     ret = {}
     ld$.find(@root, '[name]').map (f) -> ret[f.getAttribute(\name)] = f
     ret
   # n: field name. e: optional event object
+  check-debounced: debounce (e,n,fs,s,res,rej) ->
+    names = @names s
+    @after-check s, fs
+    len = names
+      .map (n) -> ((s[n]?) and s[n] == 0) # s defined and valid
+      .filter -> !it # leave those invalid
+      .length
+    s.all = if !len => 0 else 1
+    names.map (n) -> fs[n].classList
+      ..toggle \is-invalid, s[n] == 2
+      ..toggle \is-valid, s[n] < 1
+    res!
+
   check: (n, e) -> new Promise (res, rej) ~>
     if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
     [fs,s] = [@fields, @status]
     if fs[n] => s[n] = @verify(n, fs[n].value, fs[n])
-    _ = debounce (e) ~>
-      names = @names s
-      len = names
-        .map (n) ->
-          fs[n].classList.toggle \is-invalid, s[n] == 2
-          fs[n].classList.toggle \is-valid, s[n] < 1
-          return ((s[n]?) and s[n] == 0) # s defined and valid
-        .filter -> !it # leave those invalid
-        .length
-      s.all = if !len => 0 else 1
-      @after-check s
-      res!
-    if @debounce(n, s) => _(e) else _.now(e)
+    if @debounce(n, s) => @check-debounced(e,n,fs,s,res,rej) else @check-debounced.now(e,n,fs,s,res,rej)
