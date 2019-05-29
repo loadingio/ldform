@@ -17,6 +17,13 @@ ldForm = (opt={}) ->
 ldForm.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
+  reset: ->
+    [s,fs] = [@status, @fields]
+    s.all = 1
+    @names(s).map (n) ~>
+      fs[n].value = ''
+      fs[n].classList.remove \is-invalid, \is-valid
+      s[n] = 1
   ready: -> @status.all == 0
   verify: (n, v, e) -> return if v => 0 else 2
   names: -> [k for k of @fields]

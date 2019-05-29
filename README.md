@@ -87,6 +87,7 @@ An object containing fields elements, such as:
  * values - get values for all fields with a name.
  * on(event-name, cb) - listen to event "event-name" by callback cb. current supported event:
    - readystatechange: (is-ready) - fired if ready state is changed.
+ * reset - clear form fields and reset status ( clear is-invalid  / is-valid classes )
 
 
 ## License

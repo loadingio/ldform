@@ -49,6 +49,16 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     }
     return results$;
   },
+  reset: function(){
+    var ref$, s, fs, this$ = this;
+    ref$ = [this.status, this.fields], s = ref$[0], fs = ref$[1];
+    s.all = 1;
+    return this.names(s).map(function(n){
+      fs[n].value = '';
+      fs[n].classList.remove('is-invalid', 'is-valid');
+      return s[n] = 1;
+    });
+  },
   ready: function(){
     return this.status.all === 0;
   },
