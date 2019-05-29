@@ -3,9 +3,12 @@ ldForm = (opt={}) ->
   @evt-handler = {}
   @fields = fields = {}
   @status = status = {all: 1}
+  @el = el = {}
+  if opt.submit? => el.submit = if typeof(opt.submit) == \string => ld$.find(@root, opt.submit, 0) else opt.submit
   <[debounce verify names getFields afterCheck]>.map (n) ~> if opt[n] => @[n] = opt[n]
   check = (e) ~> @check {n: (if e and e.target => e.target.getAttribute(\name) else undefined), e: e}
   @fields = fields = @get-fields(root)
+  for k,v of opt.values or {} => @fields[k].value = v
   for k,v of fields => 
     v.addEventListener \change, check
     v.addEventListener \keyup, check
@@ -17,6 +20,7 @@ ldForm = (opt={}) ->
 ldForm.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
+  field: (n) -> @fields[n]
   reset: ->
     [s,fs] = [@status, @fields]
     s.all = 1
@@ -52,6 +56,7 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
       ..toggle \is-invalid, s[n] == 2
       ..toggle \is-valid, s[n] < 1
     if all != s.all => @fire \readystatechange, s.all == 0
+    if @el.submit => that.classList.toggle \disabled, (s.all != 0)
     res!
 
   check: (opt = {}) -> new Promise (res, rej) ~>

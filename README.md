@@ -15,6 +15,8 @@ ldForm automatically scan every input fields by '''\*[name]''' selector, so you 
 
 Or, you can specify your own '''getFields''' function to apply your own rules.
 
+Additionally, if you have an element with its type being 'submit', ldForm will automatically remove it's 'disabled' class when validation passed.
+
 
 ## Configurations
 
@@ -43,7 +45,7 @@ Or, you can specify your own '''getFields''' function to apply your own rules.
      * n - event field name
      * s - status object
    * returns: true (debounce) / false (no debounce)
-   
+ * values: hash object with default values for corresponding keys.
 
 
 ## Status Object
@@ -88,6 +90,7 @@ An object containing fields elements, such as:
  * on(event-name, cb) - listen to event "event-name" by callback cb. current supported event:
    - readystatechange: (is-ready) - fired if ready state is changed.
  * reset - clear form fields and reset status ( clear is-invalid  / is-valid classes )
+ * field(n) - get input field with name 'n'
 
 
 ## License
