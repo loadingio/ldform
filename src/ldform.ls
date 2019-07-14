@@ -5,6 +5,7 @@ ldForm = (opt={}) ->
   @status = status = {all: 1}
   @el = el = {}
   if opt.submit? => el.submit = if typeof(opt.submit) == \string => ld$.find(@root, opt.submit, 0) else opt.submit
+  if !el.submit => if ld$.find(root, '[type=submit]',0) => el.submit = that
   <[debounce verify names getFields afterCheck]>.map (n) ~> if opt[n] => @[n] = opt[n]
   check = (e) ~> @check {n: (if e and e.target => e.target.getAttribute(\name) else undefined), e: e}
   @fields = fields = @get-fields(root)

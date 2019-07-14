@@ -8,14 +8,14 @@ Form validation helper
     form = new ldForm(config);
 
 
-ldForm automatically scan every input fields by '''\*[name]''' selector, so you must provide name attributes for each input or .form-control element:
+ldForm automatically scan every input fields by `\*[name]` selector, so you must provide name attributes for each input or .form-control element:
 
     <input type="text" name="username"/>
     <textarea class="form-control" name="description"/>
 
-Or, you can specify your own '''getFields''' function to apply your own rules.
+Or, you can specify your own `getFields` function to apply your own rules.
 
-Additionally, if you have an element with its type being 'submit', ldForm will automatically remove it's 'disabled' class when validation passed.
+Additionally, if you have an element with its type being 'submit', ldForm will automatically remove it's 'disabled' class when validation passed. You can overwrite this behavior by manually specify a submit element with `submit` option.
 
 
 ## Configurations
@@ -32,7 +32,7 @@ Additionally, if you have an element with its type being 'submit', ldForm will a
  * getFields(root): customized rules for getting fields.
    input: root - root element for ldForm
    return: fields object ( see below )
-   if omitted, default to use selector '''\*[name]'''
+   if omitted, default to use selector `\*[name]`
    
  * names(status, fields): return list of name for fields to check. if omitted, default to all fields.
    * input:
@@ -46,6 +46,7 @@ Additionally, if you have an element with its type being 'submit', ldForm will a
      * s - status object
    * returns: true (debounce) / false (no debounce)
  * values: hash object with default values for corresponding keys.
+ * submit: specify the element to be un-disabled when form is validated.
 
 
 ## Status Object
