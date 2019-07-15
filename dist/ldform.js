@@ -114,16 +114,19 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     return ret;
   },
   checkDebounced: debounce(330, function(n, fs, s, res, rej){
-    var names, len, all, that;
+    var names, all, len, that;
     names = this.names(s);
+    all = s.all;
+    delete s.all;
     this.afterCheck(s, fs);
     len = names.map(function(n){
       return s[n] != null && s[n] === 0;
     }).filter(function(it){
       return !it;
     }).length;
-    all = s.all;
-    s.all = !len ? 0 : 1;
+    if (!(s.all != null)) {
+      s.all = !len ? 0 : 1;
+    }
     names.map(function(n){
       var x$;
       x$ = fs[n].classList;

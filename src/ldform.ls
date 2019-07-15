@@ -46,13 +46,16 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
   # n: field name. e: optional event object
   check-debounced: debounce 330, (n,fs,s,res,rej) ->
     names = @names s
+    all = s.all
+    delete s.all
     @after-check s, fs
     len = names
       .map (n) -> ((s[n]?) and s[n] == 0) # s defined and valid
       .filter -> !it # leave those invalid
       .length
-    all = s.all
-    s.all = if !len => 0 else 1
+    # user might not customize s.all in after-check.
+    # if it's not updated, we then calculate it for them.
+    if !(s.all?) => s.all = if !len => 0 else 1
     names.map (n) -> fs[n].classList
       ..toggle \is-invalid, s[n] == 2
       ..toggle \is-valid, s[n] < 1
