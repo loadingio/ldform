@@ -47,6 +47,7 @@ Additionally, if you have an element with its type being 'submit', ldForm will a
    * returns: true (debounce) / false (no debounce)
  * values: hash object with default values for corresponding keys.
  * submit: specify the element to be un-disabled when form is validated.
+ * initCheck: force a checkAll at initialization.
 
 
 ## Status Object
@@ -92,6 +93,8 @@ An object containing fields elements, such as:
    - readystatechange: (is-ready) - fired if ready state is changed.
  * reset - clear form fields and reset status ( clear is-invalid  / is-valid classes )
  * field(n) - get input field with name 'n'
+ * checkAll() - force check all fields immediately. useful in programmatically input fields.
+   - set initCheck config to true for a shorthand check on initialization.
 
 
 ## License

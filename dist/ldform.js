@@ -41,12 +41,14 @@ ldForm = function(opt){
   }
   for (k in fields) {
     v = fields[k];
-    v.addEventListener('change', check);
-    v.addEventListener('keyup', check);
+    v.addEventListener('input', check);
     status[k] = 1;
   }
   if (opt.init) {
     opt.init.apply(this);
+  }
+  if (this.opt.initCheck) {
+    this.checkAll();
   }
   return this;
 };
@@ -142,6 +144,20 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     }
     return res();
   }),
+  checkAll: function(){
+    var k, v;
+    return Promise.all((function(){
+      var ref$, results$ = [];
+      for (k in ref$ = this.fields) {
+        v = ref$[k];
+        results$.push(this.check({
+          n: k,
+          now: true
+        }));
+      }
+      return results$;
+    }.call(this)));
+  },
   check: function(opt){
     var this$ = this;
     opt == null && (opt = {});

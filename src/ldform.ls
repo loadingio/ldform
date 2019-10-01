@@ -11,11 +11,11 @@ ldForm = (opt={}) ->
   @fields = fields = @get-fields(root)
   for k,v of opt.values or {} => @fields[k].value = v
   for k,v of fields => 
-    v.addEventListener \change, check
-    v.addEventListener \keyup, check
+    v.addEventListener \input, check
     status[k] = 1
 
   if opt.init => opt.init.apply @
+  if @opt.init-check => @check-all!
   @
 
 ldForm.prototype = Object.create(Object.prototype) <<< do
@@ -63,6 +63,7 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     if @el.submit => that.classList.toggle \disabled, (s.all != 0)
     res!
 
+  check-all: -> Promise.all (for k,v of @fields => @check {n: k, now: true})
   check: (opt = {}) -> new Promise (res, rej) ~>
     {n,e,now} = opt{n,e,now}
     if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
