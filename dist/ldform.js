@@ -168,7 +168,7 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
         e: opt.e,
         now: opt.now
       }, n = ref$.n, e = ref$.e, now = ref$.now;
-      if (!in$(n, this$.names(s))) {
+      if (n && !in$(n, this$.names(s))) {
         return;
       }
       if (n != null && !this$.fields[n]) {
