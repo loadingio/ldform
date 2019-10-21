@@ -66,6 +66,7 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
   check-all: -> Promise.all (for k,v of @fields => @check {n: k, now: true})
   check: (opt = {}) -> new Promise (res, rej) ~>
     {n,e,now} = opt{n,e,now}
+    if !(n in @names(s)) => return
     if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
     [fs,s] = [@fields, @status]
     if fs[n] => s[n] = @verify(n, fs[n].value, fs[n])

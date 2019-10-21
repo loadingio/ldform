@@ -168,6 +168,9 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
         e: opt.e,
         now: opt.now
       }, n = ref$.n, e = ref$.e, now = ref$.now;
+      if (!in$(n, this$.names(s))) {
+        return;
+      }
       if (n != null && !this$.fields[n]) {
         return rej(new Error("ldForm.check: field " + n + " not found."));
       }
@@ -187,4 +190,9 @@ function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
   return obj;
+}
+function in$(x, xs){
+  var i = -1, l = xs.length >>> 0;
+  while (++i < l) if (x === xs[i]) return true;
+  return false;
 }
