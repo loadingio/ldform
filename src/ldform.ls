@@ -14,37 +14,11 @@ ldForm = (opt={}) ->
     v.addEventListener \input, check
     status[k] = 1
 
-  if opt.init => opt.init.apply @
-  if @opt.init-check => @check-all!
-  @
 
-ldForm.prototype = Object.create(Object.prototype) <<< do
-  on: (n, cb) -> @evt-handler.[][n].push cb
-  fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
-  field: (n) -> @fields[n]
-  reset: ->
-    [s,fs] = [@status, @fields]
-    s.all = 1
-    @names(s).map (n) ~>
-      fs[n].value = ''
-      fs[n].classList.remove \is-invalid, \is-valid
-      s[n] = 1
-  ready: -> @status.all == 0
-  verify: (n, v, e) -> return if v => 0 else 2
-  names: -> [k for k of @fields]
-  debounce: -> true
-  after-check: ->
-  values: ->
-    ret = {}
-    for k,v of @fields => ret[k] = if v.getAttribute(\type) == \checkbox => v.checked else v.value
-    return ret
-
-  get-fields: (root) ->
-    ret = {}
-    ld$.find(@root, '[name]').map (f) -> ret[f.getAttribute(\name)] = f
-    ret
   # n: field name. e: optional event object
-  check-debounced: debounce 330, (n,fs,s,res,rej) ->
+  # we put it here because debounce function should create instance for each object.
+  # if we put it in prototype, then there will be conflicts between form objects.
+  @check-debounced = debounce 330, (n,fs,s,res,rej) ->
     names = @names s
     all = s.all
     delete s.all
@@ -62,6 +36,38 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     if all != s.all => @fire \readystatechange, s.all == 0
     if @el.submit => that.classList.toggle \disabled, (s.all != 0)
     res!
+
+
+  if opt.init => opt.init.apply @
+  if @opt.init-check => @check-all!
+  @
+
+ldForm.prototype = Object.create(Object.prototype) <<< do
+  on: (n, cb) -> @evt-handler.[][n].push cb
+  fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
+  field: (n) -> @fields[n]
+  reset: ->
+    [s,fs] = [@status, @fields]
+    s.all = 1
+    @names(s).map (n) ~>
+      fs[n].value = ''
+      fs[n].classList.remove \is-invalid, \is-valid
+      s[n] = 1
+    @check!
+  ready: -> @status.all == 0
+  verify: (n, v, e) -> return if v => 0 else 2
+  names: -> [k for k of @fields]
+  debounce: -> true
+  after-check: ->
+  values: ->
+    ret = {}
+    for k,v of @fields => ret[k] = if v.getAttribute(\type) == \checkbox => v.checked else v.value
+    return ret
+
+  get-fields: (root) ->
+    ret = {}
+    ld$.find(@root, '[name]').map (f) -> ret[f.getAttribute(\name)] = f
+    ret
 
   check-all: -> Promise.all (for k,v of @fields => @check {n: k, now: true})
   check: (opt = {}) -> new Promise (res, rej) ~>

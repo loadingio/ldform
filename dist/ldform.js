@@ -44,6 +44,35 @@ ldForm = function(opt){
     v.addEventListener('input', check);
     status[k] = 1;
   }
+  this.checkDebounced = debounce(330, function(n, fs, s, res, rej){
+    var names, all, len, that;
+    names = this.names(s);
+    all = s.all;
+    delete s.all;
+    this.afterCheck(s, fs);
+    len = names.map(function(n){
+      return s[n] != null && s[n] === 0;
+    }).filter(function(it){
+      return !it;
+    }).length;
+    if (!(s.all != null)) {
+      s.all = !len ? 0 : 1;
+    }
+    names.map(function(n){
+      var x$;
+      x$ = fs[n].classList;
+      x$.toggle('is-invalid', s[n] === 2);
+      x$.toggle('is-valid', s[n] < 1);
+      return x$;
+    });
+    if (all !== s.all) {
+      this.fire('readystatechange', s.all === 0);
+    }
+    if (that = this.el.submit) {
+      that.classList.toggle('disabled', s.all !== 0);
+    }
+    return res();
+  });
   if (opt.init) {
     opt.init.apply(this);
   }
@@ -73,11 +102,12 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     var ref$, s, fs, this$ = this;
     ref$ = [this.status, this.fields], s = ref$[0], fs = ref$[1];
     s.all = 1;
-    return this.names(s).map(function(n){
+    this.names(s).map(function(n){
       fs[n].value = '';
       fs[n].classList.remove('is-invalid', 'is-valid');
       return s[n] = 1;
     });
+    return this.check();
   },
   ready: function(){
     return this.status.all === 0;
@@ -115,35 +145,6 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     });
     return ret;
   },
-  checkDebounced: debounce(330, function(n, fs, s, res, rej){
-    var names, all, len, that;
-    names = this.names(s);
-    all = s.all;
-    delete s.all;
-    this.afterCheck(s, fs);
-    len = names.map(function(n){
-      return s[n] != null && s[n] === 0;
-    }).filter(function(it){
-      return !it;
-    }).length;
-    if (!(s.all != null)) {
-      s.all = !len ? 0 : 1;
-    }
-    names.map(function(n){
-      var x$;
-      x$ = fs[n].classList;
-      x$.toggle('is-invalid', s[n] === 2);
-      x$.toggle('is-valid', s[n] < 1);
-      return x$;
-    });
-    if (all !== s.all) {
-      this.fire('readystatechange', s.all === 0);
-    }
-    if (that = this.el.submit) {
-      that.classList.toggle('disabled', s.all !== 0);
-    }
-    return res();
-  }),
   checkAll: function(){
     var k, v;
     return Promise.all((function(){
