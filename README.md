@@ -95,6 +95,7 @@ An object containing fields elements, such as:
  * field(n) - get input field with name 'n'
  * checkAll() - force check all fields immediately. useful in programmatically input fields.
    - set initCheck config to true for a shorthand check on initialization.
+ * getfd - get FormData object corresponding to all fields in this form.
 
 
 ## License

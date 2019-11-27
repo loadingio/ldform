@@ -64,6 +64,13 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     for k,v of @fields => ret[k] = if v.getAttribute(\type) == \checkbox => v.checked else v.value
     return ret
 
+  getfd: ->
+    fd = new FormData!
+    for k,v of @fields =>
+      if v.files => for i from 0 til v.files.length => fd.append "#k[]", v.files[i]
+      else fd.append k, v.value
+    return fd
+
   get-fields: (root) ->
     ret = {}
     ld$.find(@root, '[name]').map (f) -> ret[f.getAttribute(\name)] = f
