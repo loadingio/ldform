@@ -138,18 +138,17 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     return ret;
   },
   getfd: function(){
-    var fd, k, ref$, v, i$, to$, yet$, i;
+    var fd, k, ref$, v, i$, to$, i;
     fd = new FormData();
     for (k in ref$ = this.fields) {
       v = ref$[k];
-      if (v.files) {
-        for (yet$ = true, i$ = 0, to$ = v.files.length; i$ < to$; ++i$) {
+      if (v.files && v.files.length) {
+        for (i$ = 0, to$ = v.files.length; i$ < to$; ++i$) {
           i = i$;
-          yet$ = false;
           fd.append(k + "[]", v.files[i]);
-        } if (yet$) {
-          fd.append(k, v.value);
         }
+      } else {
+        fd.append(k, v.value);
       }
     }
     return fd;

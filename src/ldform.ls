@@ -67,7 +67,8 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
   getfd: ->
     fd = new FormData!
     for k,v of @fields =>
-      if v.files => for i from 0 til v.files.length => fd.append "#k[]", v.files[i]
+      # if we omit the (), else will not be executed when !v.files. so keep it here.
+      if v.files and v.files.length => (for i from 0 til v.files.length => fd.append "#k[]", v.files[i])
       else fd.append k, v.value
     return fd
 
