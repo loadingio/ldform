@@ -9,7 +9,7 @@ ldForm = (opt={}) ->
   <[debounce verify names getFields afterCheck]>.map (n) ~> if opt[n] => @[n] = opt[n]
   check = (e) ~> @check {n: (if e and e.target => e.target.getAttribute(\name) else undefined), e: e}
   @fields = fields = @get-fields(root)
-  for k,v of opt.values or {} => @fields[k].value = v
+  for k,v of opt.values or {} => if @fields[k] => @fields[k].value = v
   for k,v of fields => 
     v.addEventListener \input, check
     status[k] = 1
