@@ -9,7 +9,7 @@ ldForm = (opt={}) ->
   <[debounce verify names getFields afterCheck]>.map (n) ~> if opt[n] => @[n] = opt[n]
   check = (e) ~> @check {n: (if e and e.target => e.target.getAttribute(\name) else undefined), e: e}
   @fields = fields = @get-fields(root)
-  for k,v of opt.values or {} => if @fields[k] => @fields[k].value = v
+  @values(opt.values or {})
   for k,v of fields => 
     v.addEventListener \input, check
     status[k] = 1
@@ -59,10 +59,18 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
   names: -> [k for k of @fields]
   debounce: -> true
   after-check: ->
-  values: ->
-    ret = {}
-    for k,v of @fields => ret[k] = if v.getAttribute(\type) == \checkbox => v.checked else v.value
-    return ret
+  values: (val) ->
+    if val? =>
+      for k,v of val or {} =>
+        if !(f = @fields[k]) => continue
+        type = f.getAttribute(\type)
+        if type == \file => continue
+        else if type == \radio => f.checked = (f.value == v)
+        else @fields[k].value = v
+    else
+      ret = {}
+      for k,v of @fields => ret[k] = if v.getAttribute(\type) == \checkbox => v.checked else v.value
+      return ret
 
   getfd: ->
     fd = new FormData!

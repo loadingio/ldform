@@ -88,7 +88,9 @@ An object containing fields elements, such as:
  * ready - return true if form is valid and ready to engage.
  * check({n, now}) - check fields for all touched fields. if n is provided, touch the field named n.
    if now = true, check immediately without debouncing.
- * values - get values for all fields with a name.
+ * values
+   - without parameter: get values for all fields with a name.
+   - else: param should be a hash object with name - value pairs for each fields.
  * on(event-name, cb) - listen to event "event-name" by callback cb. current supported event:
    - readystatechange: (is-ready) - fired if ready state is changed.
  * reset - clear form fields and reset status ( clear is-invalid  / is-valid classes )
