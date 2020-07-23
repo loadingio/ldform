@@ -10,8 +10,8 @@ ldForm = (opt={}) ->
   check = (e) ~> @check {n: (if e and e.target => e.target.getAttribute(\name) else undefined), e: e}
   @fields = fields = @get-fields(root)
   @values(opt.values or {})
-  for k,v of fields => 
-    v.addEventListener \input, check
+  for k,v of fields =>
+    (if Array.isArray(v) => v else [v]).map (f) -> f.addEventListener \input, check
     status[k] = 1
 
 
@@ -30,9 +30,11 @@ ldForm = (opt={}) ->
     # user might not customize s.all in after-check.
     # if it's not updated, we then calculate it for them.
     if !(s.all?) => s.all = if !len => 0 else 1
-    names.map (n) -> fs[n].classList
-      ..toggle \is-invalid, s[n] == 2
-      ..toggle \is-valid, s[n] < 1
+    names.map (n) ->
+      (if Array.isArray(fs[n]) => fs[n] else [fs[n]]).map (f) ->
+        f.classList
+          ..toggle \is-invalid, s[n] == 2
+          ..toggle \is-valid, s[n] < 1
     if all != s.all => @fire \readystatechange, s.all == 0
     if @el.submit => that.classList.toggle \disabled, (s.all != 0)
     res!
@@ -50,8 +52,13 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     [s,fs] = [@status, @fields]
     s.all = 1
     @names(s).map (n) ~>
-      fs[n].value = ''
-      fs[n].classList.remove \is-invalid, \is-valid
+      v = fs[n]
+      if Array.isArray(v) => v.map (f) ->
+        f.checked = it.defaultChecked
+        f.classList.remove \is-invalid, \is-valid
+      else
+        v.value = ''
+        v.classList.remove \is-invalid, \is-valid
       s[n] = 1
     @check!
   ready: -> @status.all == 0
@@ -69,7 +76,14 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
         else @fields[k].value = v
     else
       ret = {}
-      for k,v of @fields => ret[k] = if v.getAttribute(\type) == \checkbox => v.checked else v.value
+      for k,v of @fields =>
+        (if Array.isArray(v) => v else [v]).map (f) ->
+          type = f.getAttribute(\type)
+          if type == \checkbox
+            if f.checked => ret[][k].push f.value
+          else if type == \radio
+            if f.checked => ret[k] = f.value
+          else ret[k] = if f.getAttribute(\type) == \checkbox => f.checked else f.value
       return ret
 
   getfd: ->
@@ -77,12 +91,17 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     for k,v of @fields =>
       # if we omit the (), else will not be executed when !v.files. so keep it here.
       if v.files and v.files.length => (for i from 0 til v.files.length => fd.append "#k[]", v.files[i])
+      else if Array.isArray(v) => v.map (f)-> if f.checked => fd.append "#k[]", f.value
       else fd.append k, v.value
     return fd
 
   get-fields: (root) ->
     ret = {}
-    ld$.find(@root, '[name]').map (f) -> ret[f.getAttribute(\name)] = f
+    ld$.find(@root, '[name]').map (f) ->
+      n = f.getAttribute(\name)
+      if ret[n] => (if Array.isArray(ret[n]) => ret[n].push f else ret[n] = [ret[n], f])
+      else ret[n] = f
+
     ret
 
   check-all: -> Promise.all (for k,v of @fields => @check {n: k, now: true})
@@ -91,5 +110,10 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     if n and !(n in @names(s)) => return
     if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
     [fs,s] = [@fields, @status]
-    if fs[n] => s[n] = @verify(n, fs[n].value, fs[n])
+    if fs[n] =>
+      v = if !Array.isArray(fs[n]) => fs[n].value
+      else
+        v = fs[n].filter(->it.checked).map(->it.value)
+        if fs[n].0.getAttribute(\type) == \radio => v = v.0
+      s[n] = @verify( n, v, fs[n])
     if @debounce(n, s) and !now => @check-debounced(n,fs,s,res,rej) else @check-debounced(n,fs,s,res,rej).now!

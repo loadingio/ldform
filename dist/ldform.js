@@ -38,7 +38,9 @@ ldForm = function(opt){
   this.values(opt.values || {});
   for (k in fields) {
     v = fields[k];
-    v.addEventListener('input', check);
+    (Array.isArray(v)
+      ? v
+      : [v]).map(fn$);
     status[k] = 1;
   }
   this.checkDebounced = debounce(330, function(n, fs, s, res, rej){
@@ -56,11 +58,15 @@ ldForm = function(opt){
       s.all = !len ? 0 : 1;
     }
     names.map(function(n){
-      var x$;
-      x$ = fs[n].classList;
-      x$.toggle('is-invalid', s[n] === 2);
-      x$.toggle('is-valid', s[n] < 1);
-      return x$;
+      return (Array.isArray(fs[n])
+        ? fs[n]
+        : [fs[n]]).map(function(f){
+        var x$;
+        x$ = f.classList;
+        x$.toggle('is-invalid', s[n] === 2);
+        x$.toggle('is-valid', s[n] < 1);
+        return x$;
+      });
     });
     if (all !== s.all) {
       this.fire('readystatechange', s.all === 0);
@@ -77,6 +83,9 @@ ldForm = function(opt){
     this.checkAll();
   }
   return this;
+  function fn$(f){
+    return f.addEventListener('input', check);
+  }
 };
 ldForm.prototype = import$(Object.create(Object.prototype), {
   on: function(n, cb){
@@ -100,8 +109,17 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     ref$ = [this.status, this.fields], s = ref$[0], fs = ref$[1];
     s.all = 1;
     this.names(s).map(function(n){
-      fs[n].value = '';
-      fs[n].classList.remove('is-invalid', 'is-valid');
+      var v;
+      v = fs[n];
+      if (Array.isArray(v)) {
+        v.map(function(f){
+          f.checked = it.defaultChecked;
+          return f.classList.remove('is-invalid', 'is-valid');
+        });
+      } else {
+        v.value = '';
+        v.classList.remove('is-invalid', 'is-valid');
+      }
       return s[n] = 1;
     });
     return this.check();
@@ -145,11 +163,28 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
       ret = {};
       for (k in ref$ = this.fields) {
         v = ref$[k];
-        ret[k] = v.getAttribute('type') === 'checkbox'
-          ? v.checked
-          : v.value;
+        (Array.isArray(v)
+          ? v
+          : [v]).map(fn$);
       }
       return ret;
+    }
+    function fn$(f){
+      var type;
+      type = f.getAttribute('type');
+      if (type === 'checkbox') {
+        if (f.checked) {
+          return (ret[k] || (ret[k] = [])).push(f.value);
+        }
+      } else if (type === 'radio') {
+        if (f.checked) {
+          return ret[k] = f.value;
+        }
+      } else {
+        return ret[k] = f.getAttribute('type') === 'checkbox'
+          ? f.checked
+          : f.value;
+      }
     }
   },
   getfd: function(){
@@ -162,17 +197,34 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
           i = i$;
           fd.append(k + "[]", v.files[i]);
         }
-      } else {
-        fd.append(k, v.value);
+      } else if (Array.isArray(v)) {
+        v.map(fn$);
       }
     }
     return fd;
+    function fn$(f){
+      if (f.checked) {
+        return fd.append(k + "[]", f.value);
+      } else {
+        return fd.append(k, v.value);
+      }
+    }
   },
   getFields: function(root){
     var ret;
     ret = {};
     ld$.find(this.root, '[name]').map(function(f){
-      return ret[f.getAttribute('name')] = f;
+      var n;
+      n = f.getAttribute('name');
+      if (ret[n]) {
+        if (Array.isArray(ret[n])) {
+          return ret[n].push(f);
+        } else {
+          return ret[n] = [ret[n], f];
+        }
+      } else {
+        return ret[n] = f;
+      }
     });
     return ret;
   },
@@ -194,7 +246,7 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     var this$ = this;
     opt == null && (opt = {});
     return new Promise(function(res, rej){
-      var ref$, n, e, now, fs, s;
+      var ref$, n, e, now, fs, s, v;
       ref$ = {
         n: opt.n,
         e: opt.e,
@@ -208,7 +260,14 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
       }
       ref$ = [this$.fields, this$.status], fs = ref$[0], s = ref$[1];
       if (fs[n]) {
-        s[n] = this$.verify(n, fs[n].value, fs[n]);
+        v = !Array.isArray(fs[n])
+          ? fs[n].value
+          : (v = fs[n].filter(function(it){
+            return it.checked;
+          }).map(function(it){
+            return it.value;
+          }), fs[n][0].getAttribute('type') === 'radio' ? v = v[0] : void 8);
+        s[n] = this$.verify(n, v, fs[n]);
       }
       if (this$.debounce(n, s) && !now) {
         return this$.checkDebounced(n, fs, s, res, rej);
