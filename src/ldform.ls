@@ -69,11 +69,14 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
   values: (val) ->
     if val? =>
       for k,v of val or {} =>
-        if !(f = @fields[k]) => continue
-        type = f.getAttribute(\type)
-        if type == \file => continue
-        else if type == \radio => f.checked = (f.value == v)
-        else @fields[k].value = v
+        if !(fs = @fields[k]) => continue
+        fs = if Array.isArray(fs) => fs else [fs]
+        fs.map (f) ~>
+          type = f.getAttribute(\type)
+          if type == \file => return
+          else if type == \radio => f.checked = (f.value == v)
+          else if type == \checkbox => f.checked = (v in (f.value or []))
+          else @fields[k].value = v
     else
       ret = {}
       for k,v of @fields =>

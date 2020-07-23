@@ -142,21 +142,17 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
   },
   afterCheck: function(){},
   values: function(val){
-    var k, ref$, v, f, type, ret, results$ = [];
+    var k, ref$, v, fs, ret, results$ = [], this$ = this;
     if (val != null) {
       for (k in ref$ = val || {}) {
         v = ref$[k];
-        if (!(f = this.fields[k])) {
+        if (!(fs = this.fields[k])) {
           continue;
         }
-        type = f.getAttribute('type');
-        if (type === 'file') {
-          continue;
-        } else if (type === 'radio') {
-          results$.push(f.checked = f.value === v);
-        } else {
-          results$.push(this.fields[k].value = v);
-        }
+        fs = Array.isArray(fs)
+          ? fs
+          : [fs];
+        results$.push(fs.map(fn$));
       }
       return results$;
     } else {
@@ -165,11 +161,22 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
         v = ref$[k];
         (Array.isArray(v)
           ? v
-          : [v]).map(fn$);
+          : [v]).map(fn1$);
       }
       return ret;
     }
     function fn$(f){
+      var type;
+      type = f.getAttribute('type');
+      if (type === 'file') {} else if (type === 'radio') {
+        return f.checked = f.value === v;
+      } else if (type === 'checkbox') {
+        return f.checked = in$(v, f.value || []);
+      } else {
+        return this$.fields[k].value = v;
+      }
+    }
+    function fn1$(f){
       var type;
       type = f.getAttribute('type');
       if (type === 'checkbox') {
