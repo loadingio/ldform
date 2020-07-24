@@ -171,7 +171,7 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
       if (type === 'file') {} else if (type === 'radio') {
         return f.checked = f.value === v;
       } else if (type === 'checkbox') {
-        return f.checked = in$(v, f.value || []);
+        return f.checked = in$(f.value, v || []);
       } else {
         return this$.fields[k].value = v;
       }
@@ -267,13 +267,18 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
       }
       ref$ = [this$.fields, this$.status], fs = ref$[0], s = ref$[1];
       if (fs[n]) {
-        v = !Array.isArray(fs[n])
-          ? fs[n].value
-          : (v = fs[n].filter(function(it){
+        if (!Array.isArray(fs[n])) {
+          v = fs[n].value;
+        } else {
+          v = fs[n].filter(function(it){
             return it.checked;
           }).map(function(it){
             return it.value;
-          }), fs[n][0].getAttribute('type') === 'radio' ? v = v[0] : void 8);
+          });
+          if (fs[n][0].getAttribute('type') === 'radio') {
+            v = v[0];
+          }
+        }
         s[n] = this$.verify(n, v, fs[n]);
       }
       if (this$.debounce(n, s) && !now) {

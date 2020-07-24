@@ -75,7 +75,7 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
           type = f.getAttribute(\type)
           if type == \file => return
           else if type == \radio => f.checked = (f.value == v)
-          else if type == \checkbox => f.checked = (v in (f.value or []))
+          else if type == \checkbox => f.checked = (f.value in (v or []))
           else @fields[k].value = v
     else
       ret = {}
@@ -114,7 +114,7 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
     [fs,s] = [@fields, @status]
     if fs[n] =>
-      v = if !Array.isArray(fs[n]) => fs[n].value
+      if !Array.isArray(fs[n]) => v = fs[n].value
       else
         v = fs[n].filter(->it.checked).map(->it.value)
         if fs[n].0.getAttribute(\type) == \radio => v = v.0
