@@ -218,10 +218,14 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
     }
   },
   getFields: function(root){
-    var ret;
+    var ret, this$ = this;
     ret = {};
     ld$.find(this.root, '[name]').map(function(f){
-      var n;
+      var form, n;
+      form = ld$.parent(f, '[ldform]', this$.root);
+      if (form && this$.root !== form) {
+        return;
+      }
       n = f.getAttribute('name');
       if (ret[n]) {
         if (Array.isArray(ret[n])) {

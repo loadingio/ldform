@@ -100,7 +100,9 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
 
   get-fields: (root) ->
     ret = {}
-    ld$.find(@root, '[name]').map (f) ->
+    ld$.find(@root, '[name]') .map (f) ~>
+      form = ld$.parent(f, '[ldform]', @root)
+      if form and @root != form => return
       n = f.getAttribute(\name)
       if ret[n] => (if Array.isArray(ret[n]) => ret[n].push f else ret[n] = [ret[n], f])
       else ret[n] = f

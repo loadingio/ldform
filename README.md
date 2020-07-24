@@ -17,6 +17,16 @@ Or, you can specify your own `getFields` function to apply your own rules.
 
 Additionally, if you have an element with its type being 'submit', ldForm will automatically remove it's 'disabled' class when validation passed. You can overwrite this behavior by manually specify a submit element with `submit` option.
 
+For nested form, simply add a `ldform` attribute as scoping element to separate them:
+
+    <div ldform>
+      <input name="a">
+      <div ldform>
+        <!-- b is scoped and won't be handled, unless we have another ldForm over #form2 -->
+        <input name="b">
+      </form>
+    </form>
+
 
 ## Configurations
 
