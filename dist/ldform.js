@@ -206,14 +206,14 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
         }
       } else if (Array.isArray(v)) {
         v.map(fn$);
+      } else {
+        fd.append(k, v.value);
       }
     }
     return fd;
     function fn$(f){
       if (f.checked) {
         return fd.append(k + "[]", f.value);
-      } else {
-        return fd.append(k, v.value);
       }
     }
   },

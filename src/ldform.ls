@@ -94,7 +94,7 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     for k,v of @fields =>
       # if we omit the (), else will not be executed when !v.files. so keep it here.
       if v.files and v.files.length => (for i from 0 til v.files.length => fd.append "#k[]", v.files[i])
-      else if Array.isArray(v) => v.map (f)-> if f.checked => fd.append "#k[]", f.value
+      else if Array.isArray(v) => v.map (f)-> (if f.checked => fd.append "#k[]", f.value)
       else fd.append k, v.value
     return fd
 
