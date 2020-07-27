@@ -98,6 +98,10 @@ An object containing fields elements, such as:
  * ready - return true if form is valid and ready to engage.
  * check({n, now}) - check fields for all touched fields. if n is provided, touch the field named n.
    if now = true, check immediately without debouncing.
+   to check multiple fields, provide a list:
+
+       check([{...}, {...}, ... ])
+
  * values
    - without parameter: get values for all fields with a name.
    - else: param should be a hash object with name - value pairs for each fields.

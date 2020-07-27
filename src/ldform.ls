@@ -110,15 +110,17 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     ret
 
   check-all: -> Promise.all (for k,v of @fields => @check {n: k, now: true})
-  check: (opt = {}) -> new Promise (res, rej) ~>
-    {n,e,now} = opt{n,e,now}
-    if n and !(n in @names(s)) => return
-    if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
-    [fs,s] = [@fields, @status]
-    if fs[n] =>
-      if !Array.isArray(fs[n]) => v = fs[n].value
-      else
-        v = fs[n].filter(->it.checked).map(->it.value)
-        if fs[n].0.getAttribute(\type) == \radio => v = v.0
-      s[n] = @verify( n, v, fs[n])
-    if @debounce(n, s) and !now => @check-debounced(n,fs,s,res,rej) else @check-debounced(n,fs,s,res,rej).now!
+  check: (opt = {}) ->
+    if Array.isArray(opt) => return Promise.all opt.map(~> @check it)
+    new Promise (res, rej) ~>
+      {n,e,now} = opt{n,e,now}
+      if n and !(n in @names(s)) => return
+      if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
+      [fs,s] = [@fields, @status]
+      if fs[n] =>
+        if !Array.isArray(fs[n]) => v = fs[n].value
+        else
+          v = fs[n].filter(->it.checked).map(->it.value)
+          if fs[n].0.getAttribute(\type) == \radio => v = v.0
+        s[n] = @verify( n, v, fs[n])
+      if @debounce(n, s) and !now => @check-debounced(n,fs,s,res,rej) else @check-debounced(n,fs,s,res,rej).now!

@@ -256,6 +256,11 @@ ldForm.prototype = import$(Object.create(Object.prototype), {
   check: function(opt){
     var this$ = this;
     opt == null && (opt = {});
+    if (Array.isArray(opt)) {
+      return Promise.all(opt.map(function(it){
+        return this$.check(it);
+      }));
+    }
     return new Promise(function(res, rej){
       var ref$, n, e, now, fs, s, v;
       ref$ = {
