@@ -4,6 +4,9 @@
   "license": "MIT",
   "description": "form validation tool",
   "version": "0.0.1",
+  "files": [
+    "dist/**/*"
+  ],
   "homepage": "https://github.com/loadingio/ldForm",
   "repository": {
     "type": "git",
