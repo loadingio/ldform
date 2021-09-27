@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "description": "form validation tool",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "files": [
     "dist/**/*"
   ],
@@ -14,7 +14,7 @@
     "url": "https://github.com/loadingio/ldform"
   },
   "engines": {
-    "node": "^10.14.1",
+    "node": ">=10.14.1",
     "npm": ">=6.4.1"
   },
   "devDependencies": {
