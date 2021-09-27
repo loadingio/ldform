@@ -2,24 +2,25 @@
   "author": "zbryikt",
   "name": "ldform",
   "license": "MIT",
+  "main": "dist/index.js",
   "description": "form validation tool",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "files": [
     "dist/**/*"
   ],
-  "homepage": "https://github.com/loadingio/ldForm",
+  "homepage": "https://github.com/loadingio/ldform",
   "repository": {
     "type": "git",
-    "url": "https://github.com/loadingio/ldForm"
+    "url": "https://github.com/loadingio/ldform"
   },
   "engines": {
-    "node": ">=0.12.6",
-    "npm": ">=1.2.2"
+    "node": "^10.14.1",
+    "npm": ">=6.4.1"
   },
   "devDependencies": {
-    "LiveScript": ">=1.2.0",
-    "stylus": "=0.54.8",
-    "uglify-js": "=3.2.0",
+    "livescript": "^1.6.0",
+    "stylus": "^0.55.0",
+    "uglify-js": "^3.2.0",
     "uglifycss": "0.0.29"
   }
 }

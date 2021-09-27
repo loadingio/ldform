@@ -1,4 +1,4 @@
-ldForm = (opt={}) ->
+ldform = (opt={}) ->
   @ <<< opt: opt, root: root = if typeof(opt.root) == \string => ld$.find(document, opt.root, 0) else opt.root
   @evt-handler = {}
   @fields = fields = {}
@@ -44,7 +44,7 @@ ldForm = (opt={}) ->
   if @opt.init-check => @check-all!
   @
 
-ldForm.prototype = Object.create(Object.prototype) <<< do
+ldform.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
   field: (n) -> @fields[n]
@@ -115,7 +115,7 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
     new Promise (res, rej) ~>
       {n,e,now} = opt{n,e,now}
       if n and !(n in @names(s)) => return
-      if n? and !@fields[n] => return rej new Error("ldForm.check: field #n not found.")
+      if n? and !@fields[n] => return rej new Error("ldform.check: field #n not found.")
       [fs,s] = [@fields, @status]
       if fs[n] =>
         if !Array.isArray(fs[n]) => v = fs[n].value
@@ -124,3 +124,6 @@ ldForm.prototype = Object.create(Object.prototype) <<< do
           if fs[n].0.getAttribute(\type) == \radio => v = v.0
         s[n] = @verify( n, v, fs[n])
       if @debounce(n, s) and !now => @check-debounced(n,fs,s,res,rej) else @check-debounced(n,fs,s,res,rej).now!
+
+if module? => module.exports = ldform
+else if window? => window.ldform = ldform
