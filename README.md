@@ -1,28 +1,28 @@
-# ldForm
+# ldform
 
 Form validation helper
 
 
 ## Usage
 
-    form = new ldForm(config);
+    form = new ldform(config);
 
 
-ldForm automatically scan every input fields by `\*[name]` selector, so you must provide name attributes for each input or .form-control element:
+ldform automatically scan every input fields by `\*[name]` selector, so you must provide name attributes for each input or .form-control element:
 
     <input type="text" name="username"/>
     <textarea class="form-control" name="description"/>
 
 Or, you can specify your own `getFields` function to apply your own rules.
 
-Additionally, if you have an element with its type being 'submit', ldForm will automatically remove it's 'disabled' class when validation passed. You can overwrite this behavior by manually specify a submit element with `submit` option.
+Additionally, if you have an element with its type being 'submit', ldform will automatically remove it's 'disabled' class when validation passed. You can overwrite this behavior by manually specify a submit element with `submit` option.
 
 For nested form, simply add a `ldform` attribute as scoping element to separate them:
 
     <div ldform>
       <input name="a">
       <div ldform>
-        <!-- b is scoped and won't be handled, unless we have another ldForm over #form2 -->
+        <!-- b is scoped and won't be handled, unless we have another ldform over #form2 -->
         <input name="b">
       </form>
     </form>
@@ -38,9 +38,9 @@ For nested form, simply add a `ldform` attribute as scoping element to separate 
      * value: field value
      * element: field element
    * returns: status value ( see Status Object below )
-   * optional. if omitted, ldForm will check against emptiness.
+   * optional. if omitted, ldform will check against emptiness.
  * getFields(root): customized rules for getting fields.
-   input: root - root element for ldForm
+   input: root - root element for ldform
    return: fields object ( see below )
    if omitted, default to use selector `\*[name]`
    
