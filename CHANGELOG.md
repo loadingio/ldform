@@ -1,5 +1,12 @@
 # Change Logs
 
+## v0.1.3
+
+ - upgrade modules to fix vulnerability in dependencies
+ - listening to additional events for fields update
+ - support Promise returned from verify function
+
+
 ## v0.1.2
 
  - upgrade modules
