@@ -11,7 +11,11 @@ ldform = (opt={}) ->
   @fields = fields = @get-fields(root)
   @values(opt.values or {})
   for k,v of fields =>
-    (if Array.isArray(v) => v else [v]).map (f) -> f.addEventListener \input, check
+    (if Array.isArray(v) => v else [v]).map (f) ->
+      # we may also add `keyup`, but this will cause multiple checks.
+      # consider debouncing `check` if we really need `keyup`.
+      (n) <- <[change input paste]>.for-each _
+      f.addEventListener n, check
     status[k] = 1
 
 
@@ -122,8 +126,12 @@ ldform.prototype = Object.create(Object.prototype) <<< do
         else
           v = fs[n].filter(->it.checked).map(->it.value)
           if fs[n].0.getAttribute(\type) == \radio => v = v.0
-        s[n] = @verify( n, v, fs[n])
-      if @debounce(n, s) and !now => @check-debounced(n,fs,s,res,rej) else @check-debounced(n,fs,s,res,rej).now!
+        r = @verify(n, v, fs[n])
+      p = if !(r and r.then) => Promise.resolve(s[n] = r)
+      else r.then -> s[n] = it
+      <~ p.then _
+      if @debounce(n, s) and !now => @check-debounced(n,fs,s,res,rej)
+      else @check-debounced(n,fs,s,res,rej).now!
 
 if module? => module.exports = ldform
 else if window? => window.ldform = ldform

@@ -84,7 +84,9 @@
     }
     return this;
     function fn$(f){
-      return f.addEventListener('input', check);
+      return ['change', 'input', 'paste'].forEach(function(n){
+        return f.addEventListener(n, check);
+      });
     }
   };
   ldform.prototype = import$(Object.create(Object.prototype), {
@@ -266,7 +268,7 @@
         }));
       }
       return new Promise(function(res, rej){
-        var ref$, n, e, now, fs, s, v;
+        var ref$, n, e, now, fs, s, v, r, p;
         ref$ = {
           n: opt.n,
           e: opt.e,
@@ -292,13 +294,20 @@
               v = v[0];
             }
           }
-          s[n] = this$.verify(n, v, fs[n]);
+          r = this$.verify(n, v, fs[n]);
         }
-        if (this$.debounce(n, s) && !now) {
-          return this$.checkDebounced(n, fs, s, res, rej);
-        } else {
-          return this$.checkDebounced(n, fs, s, res, rej).now();
-        }
+        p = !(r && r.then)
+          ? Promise.resolve(s[n] = r)
+          : r.then(function(it){
+            return s[n] = it;
+          });
+        return p.then(function(){
+          if (this$.debounce(n, s) && !now) {
+            return this$.checkDebounced(n, fs, s, res, rej);
+          } else {
+            return this$.checkDebounced(n, fs, s, res, rej).now();
+          }
+        });
       });
     }
   });
